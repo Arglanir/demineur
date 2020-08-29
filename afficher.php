@@ -21,7 +21,7 @@ for ($i=1; $i<=$nombreDeJoueurs; $i++) {
 	if ($joueurEnCours == $i) echo "</u>";
 	echo "<br>";
 	echo $minesDecouvertes[$i]."";
-	echo "<img border=0 src=\"img/n-$i.PNG\">";
+	echo "<img border=0 src=\"img/n-$i.png\">";
 	echo "</center></td>\n";
 }
 ?>
