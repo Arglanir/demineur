@@ -1,0 +1,74 @@
+<?
+/*
+Démineur, développé par Cédric aka Radon, pour jouer avec Sara
+
+paramètres GET:
+	j=NomJoueurDeLaFenetre
+	f=base du fichier, fichier étant nommé "demin".$_GET["f"]."partie.dmn"
+
+paramètres POST:
+	pour un coup
+		j=n°joueur qui a joué
+		x=abscisse de la case cliquée
+		y=ordonnée de la case cliquée
+		b=bombe utilisée ?
+	pour la création
+		nbJoueurs
+		nomsJoueursN='tableau' des noms de joueurs $_POST["nomsJoueurs".$i]
+		nbMines
+		tX
+		tY
+
+autres paramètres internes
+	$message			chaine de caractères à afficher
+	$doitJouer		si c'est le tour du joueur qui affiche le jeu -> oui : activer les liens -> non : activer le meta name="refresh"
+	$partieChargee		vrai ou faux
+	$site		adresse du site
+
+composition du fichier "demin".$_GET["f"]."partie.dmn"
+	Nombre de Joueurs	$nombreDeJoueurs
+	Joueur en cours	$joueurEnCours		1/2
+	Nom joueur 1		$nomJoueur[1]
+	Nom joueur 2		$nomJoueur[2]
+	Bombe j1			$bombeJoueur[1]		0 : utilisée / 1 : disponible
+	Bombe j2			$bombeJoueur[2]		0 : utilisée / 1 : disponible
+	Mines découvertes par 1	$minesDecouvertes[1]
+	Mines découvertes par 2	$minesDecouvertes[2]
+	Nombre de mines	$nombreDeMines
+	Taille x			$tailleX
+	Taille y			$tailleY
+	tableau des mines 	$tableauMines[][]		1 une mine, 0 aucune
+	tableau découvert	$tableauDecouvert[][]	0-8 numéros, 9 pas découvert, -1 & -2 : mine du joueur
+
+fonctions
+	chargementVariables()	lecture du fichier "demin".$_GET["f"]."partie.dmn"
+	creationPartie()		creation d'un fichier "demin".$_GET["f"]."partie.dmn"
+	traitementCoup()		traitement du coup
+	ecritureFichier()		réécriture dans le fichier
+
+	entete()				du <html> au </head>
+	leDessus()			du <body> au début de la grille, ecrire $message
+	dessinerGrille()		dessiner la grille $tableauDecouvert[][] et les informations des joueurs...
+						$nomJoueur[], $joueurEnCours, $minesDecouvertes[], $bombeJoueur[], $nombreDeMines...
+	leBas()				de la fin de la grille au </html>
+
+	image($numero)	<img border=0 src="img/n$numero.gif">
+					< 0 : drapeaux
+					0 - 8 : cases
+					9 : case inexploree
+					10 : mine existante
+
+fichiers :
+	fonctions.inc	fichier à inclure dans tous les fichiers, qui défini les fonctions
+	creation.php	creer un jeu
+	jouer.php		traitement du coup
+	demineur.php	dessin de la grille
+
+	
+
+
+*/
+
+
+
+?>
