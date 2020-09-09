@@ -160,8 +160,15 @@ function creationPartie(){ //creation d`un fichier "demin".$_GET["f"]."partie.dm
 //	Joueur en cours
 	$joueurEnCours = mt_rand(1,$nombreDeJoueurs);
 //	Nom joueur 
-	for($i = 1; $i <= $nombreDeJoueurs; $i++)
-		$nomJoueur[$i] = $_POST["nomsJoueurs".$i];
+	for($i = 1; $i <= $nombreDeJoueurs; $i++) {
+	    $name = trim($_POST["nomsJoueurs".$i]);
+	    $name = preg_replace('/[^\w\-]/u', '', $name);
+	    if ($name === '') {
+	        echo "Le nom '".$name."' (extrait de '".$_POST["nomsJoueurs".$i]."') n'est pas un nom correct.";
+	        die();
+	    }
+		$nomJoueur[$i] = $name;
+	}
 //	Bombe			$bombeJoueur[1]		0 : utilisée / 1 : disponible
 	for($i = 1; $i <= $nombreDeJoueurs; $i++)
 		$bombeJoueur[$i] = 1;
