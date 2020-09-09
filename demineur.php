@@ -26,6 +26,18 @@ if (isset($_GET["b"])) {
 <? if (!$doitJouer) { ?>
 <script>
 setTimeout("window.location = window.location;",5000);
+// demande de permission d'afficher des notifications
+Notification.requestPermission( function(status) {
+  console.log("Permission de notifier: " + status); // les notifications ne seront affichées que si "autorisées"
+});
+</script>
+<?}else{?>
+<script>
+// envoi d'une notification
+Notification.requestPermission( function(status) {
+  console.log("Permission de notifier: " + status);
+  var n = new Notification("Démineur", {body: "C'est à toi de jouer !"});
+});
 </script>
 <?}?>
 <title>Démineur... partie entre <? echo $nomJoueur[1]." et ".$nomJoueur[2]; ?></title>
