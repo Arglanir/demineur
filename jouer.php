@@ -1,5 +1,10 @@
-<?
+<?php
 include ("fonctions.inc");
+
+// UTF-8 output and internal encoding
+header('Content-Type: text/html; charset=utf-8');
+ini_set('default_charset','UTF-8');
+if (function_exists('mb_internal_encoding')) mb_internal_encoding('UTF-8');
 
 chargementVariables();
 
@@ -21,18 +26,22 @@ if (!$var) {
 }
 
 ?>
+<!doctype html>
 <html>
 <head>
-<title>Démineur... partie entre <? echo $nomJoueur[1]." et ".$nomJoueur[2]; ?></title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DÃ©mineur... partie entre <?php echo $nomJoueur[1]." et ".$nomJoueur[2]; ?></title>
+<?php appliquerStyleJeu($tailleY); ?>
 </head>
 <body>
 <center>
-<?
+<?php
 echo $message;
 ?>
 <br>
 <table><tr>
-<?
+<?php
 
 for ($i=1; $i<=$nombreDeJoueurs; $i++) {
 	echo "<td><center>";
@@ -48,12 +57,12 @@ for ($i=1; $i<=$nombreDeJoueurs; $i++) {
 }
 ?>
 <td>
-sur <? echo $nombreDeMines; ?> mines
+sur <?php echo $nombreDeMines; ?> mines
 </td>
 </tr></table>
 <br><br>
 
-<?
+<?php
 dessinerGrille(TRUE);
 ?>
 <br>

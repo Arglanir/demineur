@@ -1,109 +1,117 @@
-<? /* fichier qui contient les fonctions importantes et les variables globales... include("fonctions.inc") */
-$nombreDeJoueurs = 0;			$joueurEnCours = 0;	$nomJoueur = array();	$bombeJoueur = array();
-$minesDecouvertes = array();	$nombreDeMines = 0;	$tailleX = 0;			$tailleY = 0;
-$tableauMines = array();		$tableauDecouvert = array();
-$numeroJoueur = 0;				$tempsReel = 0;
+<?php /* fichier qui contient les fonctions importantes et les variables globales... include("fonctions.inc") */
+// Ensure UTF-8 internal encoding
+if (!ini_get('default_charset') || strtolower(ini_get('default_charset')) !== 'utf-8') {
+    ini_set('default_charset', 'UTF-8');
+}
+if (function_exists('mb_internal_encoding')) {
+    mb_internal_encoding('UTF-8');
+}
+
+$nombreDeJoueurs = 0;            $joueurEnCours = 0;    $nomJoueur = array();    $bombeJoueur = array();
+$minesDecouvertes = array();    $nombreDeMines = 0;    $tailleX = 0;            $tailleY = 0;
+$tableauMines = array();        $tableauDecouvert = array();
+$numeroJoueur = 0;                $tempsReel = 0;
 $tailleBombe = 0;
 $tableauSons = array();
-$tableauCoups = array();//Derniers coups joués
+$tableauCoups = array();//Derniers coups jouÃ©s
 $var = FALSE;
 $joueMine = FALSE; $ATOUS = 0;
 
-$message = "";		$doitJouer = 0;	$partieChargee = 0;
+$message = "";        $doitJouer = 0;    $partieChargee = 0;
 
 include("config.inc");
 
 //global $nombreDeJoueurs, $joueurEnCours, $nomJoueur, $bombeJoueur, $minesDecouvertes, $nombreDeMines, $tailleX, $tailleY, $tableauMines, $tableauDecouvert, $message, $doitJouer, $partieChargee, $numeroJoueur, $tempsReel;
 
 
-function chargementVariables() {	//lecture du fichier "demin".$_GET["f"]."partie.dmn"
-	global $ATOUS, $nombreDeJoueurs, $joueurEnCours, $nomJoueur, $bombeJoueur, $minesDecouvertes, $nombreDeMines, $tailleX, $tailleY, $tableauMines, $tableauDecouvert, $message, $doitJouer, $partieChargee, $numeroJoueur, $tempsReel, $tableauSons, $tableauCoups;
-	if (file_exists("demin".$_GET["f"]."partie.dmn")) {
-		$contenu = file("demin".$_GET["f"]."partie.dmn");
-		$ligne = 0;
-//	Nombre de Joueurs
-		$nombreDeJoueurs = 0 + $contenu[$ligne++];
-//	Joueur en cours
-		$joueurEnCours = 0 + $contenu[$ligne++];
-//	Nom joueur 
-		for($i = 1; $i <= $nombreDeJoueurs; $i++)
-			$nomJoueur[$i] = trim($contenu[$ligne++]);
-//	Bombe			$bombeJoueur[1]		0 : utilisée / 1 : disponible
-		for($i = 1; $i <= $nombreDeJoueurs; $i++)
-			$bombeJoueur[$i] = 0 + $contenu[$ligne++];
-//	Mines découvertes par 1	$minesDecouvertes[1]
-		for($i = 1; $i <= $nombreDeJoueurs; $i++)
-			$minesDecouvertes[$i] =  0 + $contenu[$ligne++];
-//	Nombre de mines
-		$nombreDeMines =  0 + $contenu[$ligne++];
-//	Taille x
-		$tailleX =  0 + $contenu[$ligne++];
-//	Taille y
-		$tailleY =  0 + $contenu[$ligne++];
-//	tableau des mines 	$tableauMines[][]		1 une mine, 0 aucune
-		for($i = 1; $i <= $tailleX; $i++) {
-			$tableau = explode(" ",$contenu[$ligne]);
-			for($j = 1; $j <= $tailleY; $j++)
-				$tableauMines[$i][$j] = 0 + $tableau[$j-1];
-			$ligne++;
-		}
-//	tableau découvert	$tableauDecouvert[][]	0-8 numéros, 9 pas découvert, -1 & -2 : mine du joueur
-		for($i = 1; $i <= $tailleX; $i++) {
-			$tableau = explode(" ",$contenu[$ligne]);
-			for($j = 1; $j <= $tailleY; $j++)
-				$tableauDecouvert[$i][$j] = 0 + $tableau[$j-1];
-			$ligne++;
-		}
-//	Chargement des derniers coups joués
-		for($i = 1; $i <= $nombreDeJoueurs; $i++) {
-			$temp = explode(",",trim($contenu[$ligne++]));
-			$tableauCoups[$i][0] = 0+$temp[0];
-			$tableauCoups[$i][1] = 0+$temp[1];
-		}	
-//	Chargement des sons à jouer
-		for($i = 1; $i <= $nombreDeJoueurs; $i++)
-			$tableauSons[$i] = trim($contenu[$ligne++]);
+function chargementVariables() {    //lecture du fichier "demin".$_GET["f"]."partie.dmn"
+    global $ATOUS, $nombreDeJoueurs, $joueurEnCours, $nomJoueur, $bombeJoueur, $minesDecouvertes, $nombreDeMines, $tailleX, $tailleY, $tableauMines, $tableauDecouvert, $message, $doitJouer, $partieChargee, $numeroJoueur, $tempsReel, $tableauSons, $tableauCoups;
+    if (file_exists("demin".$_GET["f"]."partie.dmn")) {
+        $contenu = file("demin".$_GET["f"]."partie.dmn");
+        $ligne = 0;
+//    Nombre de Joueurs
+        $nombreDeJoueurs = 0 + $contenu[$ligne++];
+//    Joueur en cours
+        $joueurEnCours = 0 + $contenu[$ligne++];
+//    Nom joueur 
+        for($i = 1; $i <= $nombreDeJoueurs; $i++)
+            $nomJoueur[$i] = trim($contenu[$ligne++]);
+//    Bombe            $bombeJoueur[1]        0 : utilisÃ©e / 1 : disponible
+        for($i = 1; $i <= $nombreDeJoueurs; $i++)
+            $bombeJoueur[$i] = 0 + $contenu[$ligne++];
+//    Mines dÃ©couvertes par 1    $minesDecouvertes[1]
+        for($i = 1; $i <= $nombreDeJoueurs; $i++)
+            $minesDecouvertes[$i] =  0 + $contenu[$ligne++];
+//    Nombre de mines
+        $nombreDeMines =  0 + $contenu[$ligne++];
+//    Taille x
+        $tailleX =  0 + $contenu[$ligne++];
+//    Taille y
+        $tailleY =  0 + $contenu[$ligne++];
+//    tableau des mines     $tableauMines[][]        1 une mine, 0 aucune
+        for($i = 1; $i <= $tailleX; $i++) {
+            $tableau = explode(" ",$contenu[$ligne]);
+            for($j = 1; $j <= $tailleY; $j++)
+                $tableauMines[$i][$j] = 0 + $tableau[$j-1];
+            $ligne++;
+        }
+//    tableau dÃ©couvert    $tableauDecouvert[][]    0-8 numÃ©ros, 9 pas dÃ©couvert, -1 & -2 : mine du joueur
+        for($i = 1; $i <= $tailleX; $i++) {
+            $tableau = explode(" ",$contenu[$ligne]);
+            for($j = 1; $j <= $tailleY; $j++)
+                $tableauDecouvert[$i][$j] = 0 + $tableau[$j-1];
+            $ligne++;
+        }
+//    Chargement des derniers coups jouÃ©s
+        for($i = 1; $i <= $nombreDeJoueurs; $i++) {
+            $temp = explode(",",trim($contenu[$ligne++]));
+            $tableauCoups[$i][0] = 0+$temp[0];
+            $tableauCoups[$i][1] = 0+$temp[1];
+        }    
+//    Chargement des sons Ã  jouer
+        for($i = 1; $i <= $nombreDeJoueurs; $i++)
+            $tableauSons[$i] = trim($contenu[$ligne++]);
 
-		$partieChargee = 1;
-		
-		$numeroJoueur = @array_search($_GET["j"],$nomJoueur,FALSE);
-		$doitJouer = ($numeroJoueur == $joueurEnCours || $tempsReel == 1);
-	} else {
-		$message .= "<p class=message>Erreur à l'ouverture de la partie ".$_GET["f"].".</p>";
-		$partieChargee = 0;
-		$doitJouer = 0;
-	}
+        $partieChargee = 1;
+        
+        $numeroJoueur = @array_search($_GET["j"],$nomJoueur,FALSE);
+        $doitJouer = ($numeroJoueur == $joueurEnCours || $tempsReel == 1);
+    } else {
+        $message .= "<p class=message>Erreur Ã  l'ouverture de la partie ".$_GET["f"].".</p>";
+        $partieChargee = 0;
+        $doitJouer = 0;
+    }
 }
 
 function jouerEtEffacerSons() {
-	global $ATOUS, $numeroJoueur, $tableauSons, $message;
-	if ($numeroJoueur > 0) {
-		if($tableauSons[$numeroJoueur] != "") {
-			$tableau = explode(";",$tableauSons[$numeroJoueur]);
-			for($i = 0; $i < count($tableau); $i++) {
-				if ($_GET["s"]!="00")
-				$message .= "<EMBED src=\"". $tableau[$i] . "\" HIDDEN=TRUE AUTOSTART=TRUE LOOP=0>\n";
-			}
-			$tableauSons[$numeroJoueur] = "";
-			//réécriture du fichier pour ne plus avoir à jouer le son
-			ecritureFichier();
-		}
-	}
+    global $ATOUS, $numeroJoueur, $tableauSons, $message;
+    if ($numeroJoueur > 0) {
+        if($tableauSons[$numeroJoueur] != "") {
+            $tableau = explode(";",$tableauSons[$numeroJoueur]);
+            for($i = 0; $i < count($tableau); $i++) {
+                if ($_GET["s"]!="00")
+                $message .= "<EMBED src=\"". $tableau[$i] . "\" HIDDEN=TRUE AUTOSTART=TRUE LOOP=0>\n";
+            }
+            $tableauSons[$numeroJoueur] = "";
+            //rï¿½ï¿½criture du fichier pour ne plus avoir ï¿½ jouer le son
+            ecritureFichier();
+        }
+    }
 }
 
 function rajouterSonAJouer($sonAJouer,$aQui) {
-	global $ATOUS, $tableauSons, $numeroJoueur, $nombreDeJoueurs, $message;
-	if($aQui==$ATOUS) {
-		for ($i = 1; $i <= $nombreDeJoueurs; $i++) {
-		   if($tableauSons[$i]=="") $tableauSons[$i]=$sonAJouer; else $tableauSons[$i] .=";".$sonAJouer;
-		}
-	}
-	else {
-	if($tableauSons[$aQui]=="") $tableauSons[$aQui]=$sonAJouer; else $tableauSons[$aQui] .=";".$sonAJouer;
-	}
+    global $ATOUS, $tableauSons, $numeroJoueur, $nombreDeJoueurs, $message;
+    if($aQui==$ATOUS) {
+        for ($i = 1; $i <= $nombreDeJoueurs; $i++) {
+           if($tableauSons[$i]=="") $tableauSons[$i]=$sonAJouer; else $tableauSons[$i] .=";".$sonAJouer;
+        }
+    }
+    else {
+    if($tableauSons[$aQui]=="") $tableauSons[$aQui]=$sonAJouer; else $tableauSons[$aQui] .=";".$sonAJouer;
+    }
 }
-function ecritureFichier()	{	//réécriture dans le fichier
-	global $ATOUS, $nombreDeJoueurs, $joueurEnCours, $nomJoueur, $bombeJoueur, $minesDecouvertes, $nombreDeMines, $tailleX, $tailleY, $tableauMines, $tableauDecouvert, $message, $doitJouer, $partieChargee, $numeroJoueur, $tempsReel, $tableauSons, $tableauCoups;
+function ecritureFichier()	{	//rï¿½ï¿½criture dans le fichier
+    global $ATOUS, $nombreDeJoueurs, $joueurEnCours, $nomJoueur, $bombeJoueur, $minesDecouvertes, $nombreDeMines, $tailleX, $tailleY, $tableauMines, $tableauDecouvert, $message, $doitJouer, $partieChargee, $numeroJoueur, $tempsReel, $tableauSons, $tableauCoups;
 
 	$contenu = "";
 //	Nombre de Joueurs
@@ -113,10 +121,10 @@ function ecritureFichier()	{	//réécriture dans le fichier
 //	Nom joueur 
 	for($i = 1; $i <= $nombreDeJoueurs; $i++)
 		$contenu .=	$nomJoueur[$i] . "\n";
-//	Bombe			$bombeJoueur[1]		0 : utilisée / 1 : disponible
+//	Bombe			$bombeJoueur[1]		0 : utilisï¿½e / 1 : disponible
 	for($i = 1; $i <= $nombreDeJoueurs; $i++)
 		$contenu .=	$bombeJoueur[$i]  . "\n";
-//	Mines découvertes par 1	$minesDecouvertes[1]
+//	Mines dï¿½couvertes par 1	$minesDecouvertes[1]
 	for($i = 1; $i <= $nombreDeJoueurs; $i++)
 		$contenu .=	$minesDecouvertes[$i] . "\n";
 //	Nombre de mines
@@ -131,13 +139,13 @@ function ecritureFichier()	{	//réécriture dans le fichier
 			$contenu .=	$tableauMines[$i][$j] . " ";
 		$contenu .=	"\n";
 	}
-//	tableau découvert	$tableauDecouvert[][]	0-8 numéros, 9 pas découvert, -1 & -2 : mine du joueur
+//	tableau dï¿½couvert	$tableauDecouvert[][]	0-8 numï¿½ros, 9 pas dï¿½couvert, -1 & -2 : mine du joueur
 	for($i = 1; $i <= $tailleX; $i++) {
 		for($j = 1; $j <= $tailleY; $j++)
 			$contenu .=	$tableauDecouvert[$i][$j]." ";
 		$contenu .=	"\n";
 	}
-//	Derniers coups joués
+//	Derniers coups jouï¿½s
 	for($i = 1; $i <= $nombreDeJoueurs; $i++)
 		$contenu .= $tableauCoups[$i][0].",".$tableauCoups[$i][1]."\n"; 
 //	tableau des sons
@@ -169,10 +177,10 @@ function creationPartie(){ //creation d`un fichier "demin".$_GET["f"]."partie.dm
 	    }
 		$nomJoueur[$i] = $name;
 	}
-//	Bombe			$bombeJoueur[1]		0 : utilisée / 1 : disponible
+//	Bombe			$bombeJoueur[1]		0 : utilisï¿½e / 1 : disponible
 	for($i = 1; $i <= $nombreDeJoueurs; $i++)
 		$bombeJoueur[$i] = 1;
-//	Mines découvertes par 1	$minesDecouvertes[1]
+//	Mines dï¿½couvertes par 1	$minesDecouvertes[1]
 	for($i = 1; $i <= $nombreDeJoueurs; $i++)
 		$minesDecouvertes[$i] =  0;
 //	Nombre de mines
@@ -191,7 +199,7 @@ function creationPartie(){ //creation d`un fichier "demin".$_GET["f"]."partie.dm
 		$tableauMines[$x][$y] = 1;
 	}
 
-//	tableau découvert	$tableauDecouvert[][]	0-8 numéros, 9 pas découvert, -1 & -2 : mine du joueur
+//	tableau dï¿½couvert	$tableauDecouvert[][]	0-8 numï¿½ros, 9 pas dï¿½couvert, -1 & -2 : mine du joueur
 	for($i = 1; $i <= $tailleX; $i++)
 		for($j = 1; $j <= $tailleY; $j++)
 			$tableauDecouvert[$i][$j] = 9;
@@ -222,7 +230,7 @@ function coupEn($x, $y) {
 	global $ATOUS, $nombreDeJoueurs, $joueurEnCours, $nomJoueur, $bombeJoueur, $minesDecouvertes, $nombreDeMines, $tailleX, $tailleY, $tableauMines, $tableauDecouvert, $message, $doitJouer, $partieChargee, $numeroJoueur, $tempsReel, $tableauSons, $tableauCoups, $joueMine;
 	if ($x > $tailleX || $y > $tailleY || $x < 1 || $y < 1) return FALSE;
 	if ($tableauDecouvert[$x][$y] != 9) return FALSE;
-	if ($tableauMines[$x][$y]==1) {// mine trouvée !
+	if ($tableauMines[$x][$y]==1) {// mine trouvï¿½e !
 		$joueMine = TRUE;
 		$minesDecouvertes[$numeroJoueur] += 1;
 		$tableauDecouvert[$x][$y] = - $numeroJoueur;
@@ -249,9 +257,9 @@ function traitementCoup() {
 	$j = 0+$_POST["j"];	$x = 0+$_POST["x"];	$y = 0+$_POST["y"]; $b = 0+$_POST["b"];
 	$joueMine = FALSE;
 	if ($x > $tailleX || $y > $tailleY || $x < 1 || $y < 1) {
-		$message .= "<p class=message>Erreur : coordonnées incorrectes ($x,$y) !</p>";
+		$message .= "<p class=message>Erreur : coordonnï¿½es incorrectes ($x,$y) !</p>";
 	} else if ($j != $joueurEnCours) {
-		$message .= "<p class=message>Ce n'est pas à toi de jouer !</p>";
+		$message .= "<p class=message>Ce n'est pas ï¿½ toi de jouer !</p>";
 	} else if ($b==1) {
 		for ($i = $x - $tailleBombe; $i<$x+$tailleBombe+1; $i++)
 			for ($j = $y - $tailleBombe; $j<$y+$tailleBombe+1; $j++)
@@ -264,11 +272,11 @@ function traitementCoup() {
 		//Jouer le son Bombe chez tout le monde
 		rajouterSonAJouer("bombe.wav",$ATOUS);
 	} else if ($tableauDecouvert[$x][$y] != 9) {
-		$message .= "<p class=message>Case déjà découverte</p>";
+		$message .= "<p class=message>Case dï¿½jï¿½ dï¿½couverte</p>";
 	} else { // juste un coup
 		//Sauvegarde la position
 		$tableauCoups[$numeroJoueur][0] = $x; $tableauCoups[$numeroJoueur][1] = $y;
-		//$message .= "Case jouée : $tableauCoups[$numeroJoueur][0], $tableauCoups[$numeroJoueur][1]<br>";
+		//$message .= "Case jouï¿½e : $tableauCoups[$numeroJoueur][0], $tableauCoups[$numeroJoueur][1]<br>";
 		if (!coupEn($x, $y)) {
 			$joueurEnCours %= $nombreDeJoueurs;
 			$joueurEnCours += 1;
@@ -297,7 +305,7 @@ function derriere($i,$j) {
 function image($numero) {
 	return "<img border=0 src=\"img/n$numero.png\">";
 }
-//Position d'un curseur précédent
+//Position d'un curseur prï¿½cï¿½dent
 function coupPrecedent($Joueur,$y) {
    global $largeurCase;
 return "<img src='img/j-$Joueur.gif' border=0 width=16 style='position:relative; left: -".($largeurCase * $y)." px'>";
@@ -305,56 +313,78 @@ return "<img src='img/j-$Joueur.gif' border=0 width=16 style='position:relative;
 function videComplementaire() {
 return "<img src='img/vide.gif' border=0 width=16>";
 }
+function appliquerStyleJeu($tailleY = 10) {
+    echo '<style>
+    /* Responsive grid and images */
+    @media (max-width: 600px) {
+      table, tr, td { width: 100% !important; }
+      img { max-width: 100vw; height: auto; }
+      .demineur-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100vw;
+        max-width: 100vw;
+      }
+      .demineur-grid img {
+        width: calc(95vw / ' . intval($tailleY) . ');
+        min-width: 16px;
+        max-width: 100vw;
+        height: auto;
+      }
+    }
+    .case-container {
+      position: relative;
+      display: inline-block;
+      line-height: 0;
+      vertical-align: top;
+    }
+    .case-img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .player-img {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    </style>';
+}
+
 function imageEntoureeOuPas($numero, $Joueur) {
-	global $largeurCase,$hauteurCase;
-	if (!$Joueur)
-		return "<img src='img/n$numero.png' border=0 width=$largeurCase>";
-	return "<img style=\"background-image : url(img/n$numero.png);\" src='img/j-$Joueur.gif' border=0 width=$largeurCase height=$hauteurCase>";// 
+    // Responsive: use a span container with two stacked images
+    $imgNum = "<img src='img/n$numero.png' class='case-img'>";
+    if (!$Joueur) {
+        return "<span class='case-container'>$imgNum</span>";
+    }
+    $imgPlayer = "<img src='img/j-$Joueur.gif' class='player-img'>";
+    return "<span class='case-container'>$imgNum$imgPlayer</span>";
 }
 
 function dessinerGrille($toutAfficher = FALSE) {
-	global $ATOUS, $nombreDeJoueurs, $joueurEnCours, $nomJoueur, $bombeJoueur, $minesDecouvertes, $nombreDeMines, $tailleX, $tailleY, $tableauMines, $tableauDecouvert, $message, $doitJouer, $partieChargee, $numeroJoueur, $tempsReel, $tableauSons, $tableauCoups;
-	$modifier = " width=16 height=16";
-/*	echo "<table bgcolor=\"#EEEEEE\">\n";
-	for($i = 1; $i <= $tailleX; $i++) {
-		echo "<tr>";
-		for($j = 1; $j <= $tailleY; $j++) {
-			if ($toutAfficher) {
-				echo "<td$modifier>".image(($tableauDecouvert[$i][$j]!=9 ? $tableauDecouvert[$i][$j] : ($tableauMines[$i][$j] == 1?10:9)))."</td>";
-			} else {
-				echo "<td$modifier>".devant($i,$j).image($tableauDecouvert[$i][$j]).derriere($i,$j)."</td>";
-			}
-		}
-		echo "</tr>\n";
-	}
-	echo "</table>";
-*/
-	for($i = 1; $i <= $tailleX; $i++)
-		for($j = 1; $j <= $tailleY; $j++)
-			$tableauCoupsPrecedents[$i][$j] = 0;
-	for($i = 1; $i <= $nombreDeJoueurs; $i++)
-		$tableauCoupsPrecedents[$tableauCoups[$i][0]][$tableauCoups[$i][1]] = $i;
-	for($i = 1; $i <= $tailleX; $i++) {
-		//Repérage des anciennes positions sur cette ligne
-/*		$tableau=array(); $n=1;
-		for($k = 1; $k <= $nombreDeJoueurs; $k++)
-			if($tableauCoups[$k][0]==$i) $tableau[$n++]=array($k, $tableauCoups[$k][1]);
-		for($k = 1; $k < $n; $k++) {
-			echo "".videComplementaire()."";
-		}		
-*/		for($j = 1; $j <= $tailleY; $j++) {
-			if ($toutAfficher) {
-				echo "".image(($tableauDecouvert[$i][$j]!=9 ? $tableauDecouvert[$i][$j] : ($tableauMines[$i][$j] == 1?10:9)))."";
-			} else {
-//				echo "".devant($i,$j).image($tableauDecouvert[$i][$j]).derriere($i,$j)."";
-				echo "".devant($i,$j).imageEntoureeOuPas($tableauDecouvert[$i][$j],$tableauCoupsPrecedents[$i][$j]).derriere($i,$j)."";
-			}
-		}
-/*		for($k = 1; $k < $n; $k++) {
-			echo "".coupPrecedent($tableau[$k][0],$tailleY-$tableau[$k][1]+$k)."";
-		}
-*/		echo "<br>\n";
-	}
+    global $ATOUS, $nombreDeJoueurs, $joueurEnCours, $nomJoueur, $bombeJoueur, $minesDecouvertes, $nombreDeMines, $tailleX, $tailleY, $tableauMines, $tableauDecouvert, $message, $doitJouer, $partieChargee, $numeroJoueur, $tempsReel, $tableauSons, $tableauCoups;
+    $modifier = " width=16 height=16";
+    for($i = 1; $i <= $tailleX; $i++)
+        for($j = 1; $j <= $tailleY; $j++)
+            $tableauCoupsPrecedents[$i][$j] = 0;
+    for($i = 1; $i <= $nombreDeJoueurs; $i++)
+        $tableauCoupsPrecedents[$tableauCoups[$i][0]][$tableauCoups[$i][1]] = $i;
+    echo '<div class="demineur-grid" style="line-height:0;">';
+    for($i = 1; $i <= $tailleX; $i++) {
+        echo '<div style="display:inline-block;width:100%">';
+        for($j = 1; $j <= $tailleY; $j++) {
+            if ($toutAfficher) {
+                echo "".image(($tableauDecouvert[$i][$j]!=9 ? $tableauDecouvert[$i][$j] : ($tableauMines[$i][$j] == 1?10:9)))."";
+            } else {
+                echo "".devant($i,$j).imageEntoureeOuPas($tableauDecouvert[$i][$j],$tableauCoupsPrecedents[$i][$j]).derriere($i,$j)."";
+            }
+        }
+        echo '</div>';
+    }
+    echo '</div>';
 }
 
 function verifierSiGagnant() {
@@ -392,7 +422,7 @@ function verifierSiGagnant() {
 		$message .= "<p>Le".($plusieurs?"s":"")." joueur".($plusieurs?"s":"")." ";
 		while(list($keys,$values)=each($joueurAyantLePlusDeMines))
 			$message .= $nomJoueur[$values]." ".($plusieurs && $keys+1<sizeof($joueurAyantLePlusDeMines)?"& ":"");
-		$message .= ($plusieurs?"ont":"a")." gagné !</p>";
+		$message .= ($plusieurs?"ont":"a")." gagnï¿½ !</p>";
 		if($minesDecouvertes[$numeroJoueur]==$nMaxMines) {
 			rajouterSonAJouer("applaudissement.wav",$numeroJoueur);
 		}

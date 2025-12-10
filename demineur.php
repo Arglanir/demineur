@@ -1,4 +1,9 @@
-<?
+<?php
+// Ensure UTF-8 for output and internal string handling
+header('Content-Type: text/html; charset=utf-8');
+ini_set('default_charset','UTF-8');
+if (function_exists('mb_internal_encoding')) mb_internal_encoding('UTF-8');
+
 include("fonctions.inc");
 
 chargementVariables();
@@ -21,27 +26,33 @@ if (isset($_GET["b"])) {
 	if ($bombeAutorisee)
 		$etat_bombe = 1;
 }
-?><html>
+?>
+<!doctype html>
+<html>
 <head>
-<? if (!$doitJouer) { ?>
+<meta charset="utf-8">
+<!-- Responsive viewport for mobile -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<?php appliquerStyleJeu($tailleY); ?>
+<?php if (!$doitJouer) { ?>
 <script>
 setTimeout("window.location = window.location;",5000);
 // demande de permission d'afficher des notifications
 Notification.requestPermission( function(status) {
-  console.log("Permission de notifier: " + status); // les notifications ne seront affichées que si "autorisées"
+  console.log("Permission de notifier: " + status); // les notifications ne seront affichÃ©es que si "autorisÃ©es"
 });
 </script>
-<?}else{?>
+<?php } else { ?>
 <script>
 // envoi d'une notification
 Notification.requestPermission( function(status) {
   console.log("Permission de notifier: " + status);
-  var n = new Notification("Démineur", {body: "C'est à toi de jouer !"});
+  var n = new Notification("DÃ©mineur", {body: "C'est Ã  toi de jouer !"});
 });
 </script>
-<?}?>
-<title>Démineur... partie entre <? echo $nomJoueur[1]." et ".$nomJoueur[2]; ?></title>
-<script language=Javascript>
+<?php } ?>
+<title>DÃ©mineur... partie entre <?php echo $nomJoueur[1]." et ".$nomJoueur[2]; ?></title>
+<script language="Javascript">
 function joueEn(x,y) {
 	document.f.x.value = x;
 	document.f.y.value = y;
@@ -52,9 +63,9 @@ function joueEn(x,y) {
 </head>
 <body>
 <center>
-<?
+<?php
 if ($doitJouer) {
-	echo "C'est à toi de jouer !";
+	echo "C'est Ã  toi de jouer !";
 } else {
 	if ($nombreDeJoueurs > 2)
 		echo "Attente du coup des adversaires...";
@@ -65,7 +76,7 @@ if ($doitJouer) {
 ?>
 <br>
 <table><tr>
-<?
+<?php
 
 for ($i=1; $i<=$nombreDeJoueurs; $i++) {
 	echo "<td><center>";
@@ -81,45 +92,45 @@ for ($i=1; $i<=$nombreDeJoueurs; $i++) {
 }
 ?>
 <td>
-sur <? echo $nombreDeMines; ?> mines
+sur <?php echo $nombreDeMines; ?> mines
 </td>
 </tr></table>
 <br><br>
 
-<?
+<?php
 dessinerGrille();
 
 if ($etat_bombe==0 && $bombeAutorisee) {
 ?>
-<a href="demineur.php?<? echo "j=".$_GET["j"]."&f=".$_GET["f"]."&s=".$_GET["s"]."&b=1";  ?>">Activer la bombe</a><br>
-<?
+<a href="demineur.php?<?php echo "j=".$_GET["j"]."&f=".$_GET["f"]."&s=".$_GET["s"]."&b=1";  ?>">Activer la bombe</a><br>
+<?php
 } else if (!$bombeAutorisee) {
 ?>
-Bombe non autorisée
-<?
+Bombe non autorisÃ©e
+<?php
 } else {
 ?>
-<a href="demineur.php?<? echo "j=".$_GET["j"]."&f=".$_GET["f"]."&s=".$_GET["s"];  ?>">Desactiver la bombe</a><br>
-<?}?>
-<form name=f action="jouer.php?<? echo "j=".$_GET["j"]."&f=".$_GET["f"]."&s=".$_GET["s"];  ?>" method=POST>
-<input type=hidden name=j value=<? echo $numeroJoueur; ?>>
-<input type=hidden name=x><input type=hidden name=y>
-<input type=hidden name=b value=<? echo $etat_bombe; ?>>
+<a href="demineur.php?<?php echo "j=".$_GET["j"]."&f=".$_GET["f"]."&s=".$_GET["s" ];  ?>">DÃ©sactiver la bombe</a><br>
+<?php }?>
+<form name="f" action="jouer.php?<?php echo "j=".$_GET["j"]."&f=".$_GET["f"]."&s=".$_GET["s"];  ?>" method="POST">
+<input type="hidden" name="j" value=<?php echo $numeroJoueur; ?>>
+<input type="hidden" name="x"><input type="hidden" name="y">
+<input type="hidden" name="b" value=<?php echo $etat_bombe; ?>>
 </form>
 </center>
-<?
+<?php
 if ($_GET["s"] == "00"){
 ?>
-<a href="demineur.php?<? echo "j=".$_GET["j"]."&f=".$_GET["f"]."&s=11";  ?>">Sons désactivés</a><br/>
-<?
+<a href="demineur.php?<?php echo "j=".$_GET["j"]."&f=".$_GET["f"]."&s=11";  ?>">Sons dÃ©sactivÃ©s</a><br/>
+<?php
 } else {
 ?>
-<a href="demineur.php?<? echo "j=".$_GET["j"]."&f=".$_GET["f"]."&s=00";  ?>">Sons activés</a><br/>
-<?
+<a href="demineur.php?<?php echo "j=".$_GET["j"]."&f=".$_GET["f"]."&s=00";  ?>">Sons activÃ©s</a><br/>
+<?php
 }
 ?>
-<br/><a href="afficher.php?f=<? echo $_GET["f"]; ?>">administrer la partie</a><br/>
+<br/><a href="afficher.php?f=<?php echo $_GET["f"]; ?>">administrer la partie</a><br/>
 
-<? echo $message; ?>
+<?php echo $message; ?>
 </body>
 </html>
